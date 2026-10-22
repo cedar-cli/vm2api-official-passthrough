@@ -1,5 +1,9 @@
 # Changelog
 
+## 未发布
+
+- 新增官方 Claude Code 透传：开启 `compatibility.official_cc_passthrough` 后，官方家族 cli-hop 保留调用方 system/tools/messages、cache_control 位置与 TTL、temperature、context_management、tool_choice 和 thinking，只重绑槽位 `metadata.user_id`，不再注入 `official_full` 完整 prompt、不重打 1h 断点、不按 attempt 重 mint session。内核 persona 投影为 `zero`，避免二次注入。非官方客户端仍走原 persona/rewrite。（#674）
+
 ## 1.3.211 — 2026-10-22
 
 - 单测对齐 cli-hop 缓存标记已写入的会话 TTL（默认 `1h`，请求带 `5m` 则为 `5m`），以及 OAuth persona 三块 system（billing / identity / persona）；修正 `officialMessageMarker` 过时注释。纯测试修复，无运行时行为变化。（#675）
