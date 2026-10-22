@@ -1,5 +1,9 @@
 # Changelog
 
+## 未发布
+
+- KVM 面板终端与官方登录终端显式设置 HOME=/home/kincli、CLAUDE_CONFIG_DIR 与工作目录，避免继承 root SSH 的 HOME 导致 mkdir /root/.claude 失败；Docker 槽行为不变。（#656）
+
 ## 1.3.208 — 2026-10-21
 
 - 回退 1.3.208 的请求体重组与缓存断点改动，保持 1.3.207 的 thinking、system 和消息结构；仅在 cli-node 最终 hop 补回缺失的 `x-anthropic-billing-header`。
