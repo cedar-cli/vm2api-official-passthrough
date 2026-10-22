@@ -1,5 +1,9 @@
 # Changelog
 
+## 未发布
+
+- 一键升级与 fleet `action=telemetry` 刷新 Go 槽位服务时，数据库仍登记但本机已无 Docker 容器（`No such container: kin-NN`）的 VM 记为跳过并继续处理其余槽位，不再因此整批失败；真实容器上的刷新失败仍会硬失败。（#628，REQ-0628）
+
 ## 1.3.209 — 2026-10-22
 
 - 遥测 `event_data.env` 不再附带客户机硬件（`cpu_model`、`cpu_cores`、`memory_bytes`、`root_disk`、`mac`、`dmi_*` 共 11 项），与官方 Claude Code 2.1.296 的 env 字段一致；`worker.json` 的 identity 也不再写这些键。新 `kin-worker` 发送前会剔除旧 `worker.json` 里残留的同名键。槽位运维页「物理特征」照旧读取和展示。（#646）
@@ -23,7 +27,6 @@
 
 ## 1.3.206 — 2026-10-21
 
-- 一键升级与 fleet `action=telemetry` 刷新 Go 槽位服务时，数据库仍登记但本机已无 Docker 容器（`No such container: kin-NN`）的 VM 记为跳过并继续处理其余槽位，不再因此整批失败；真实容器上的刷新失败仍会硬失败。（#628，REQ-0628）
 - 官方登录终端把授权链接显式提取出来，跨终端帧也不会漏。复制链接、打开授权页和回填授权码与普通 OAuth 相同。
 - VM 页 OAuth 方式顺序为 Claude Code、授权链接、Cookie。设置里的「同步遥测」按默认关闭显示。
 
