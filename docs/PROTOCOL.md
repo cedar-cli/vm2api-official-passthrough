@@ -125,6 +125,8 @@ Rikka / 客户端 `search_web`、`scrape_web` **不是** Anthropic 自带搜索�
 
 HTTP hop 与 cli-hop（`prepareCliHopBody`）共用内容预过滤，但缓存职责不同。cli-hop 首跳保留签名可用的 thinking 指纹，没有可用签名的删掉；签名修复重试才清除其余块。官方家族开启 `official_cc_passthrough` 时，cli-hop 走 `prepareOfficialPassthroughBody`：保留调用方真实 Claude Code 的 system/tools/messages、cache_control 位置与 TTL、`temperature`、`context_management`、`tool_choice` 和 thinking，不注入 billing/system、不重打断点、不改工具名；只把 `metadata.user_id` 重绑到槽位设备/账号，并使用调用方 session（`mode=passthrough`）。该模式面向官方客户端；内核 `persona_preset` 投影为 `zero`，避免再叠加完整官方 prompt。非官方请求仍走原 rewrite；`official_cc_passthrough` 对它们不生效。
 
+Codex hop 的 `codex.official_passthrough=true` 只对 `openai.responses` 的官方 Codex 客户端生效：保留 `instructions`、`input`、tools、reasoning、`prompt_cache_key`、`previous_response_id`、`conversation_id`/`session_id`、官方 metadata 和 sampling 字段，只清 API key/authorization/client_metadata；outbound session 使用 `passthrough`。OpenAI 兼容客户端的 Responses 归一化与 Chat/Completions 转换不变。
+
 关闭透传或非官方请求仍走 Node rewrite：清除 caller marker，生成最后消息及 `messages.length>=4` 时倒数第二 user 的点，TTL 用入站会话 pin 值。应用 persona 后，模板显式 TTL 保留，只补自产缺失 TTL；超额时优先删 tools、system 尾部的自产点。非法模板返回 request-scoped 400，零上游执行，不换号、不冷却。
 
 native CLI `2.1.296` 保留带 billing 的 wire system（含官方 CLI / 子代理布局）、wire tools 和 wire messages，不自动给最后一个 tool 加点；caller tool 的缺失 TTL 也保持缺失。仅对 CLI 自有 marker 补 TTL，优先请求显式 TTL（混合时 5m）→ slot `kernel.json.default_cache_ttl` → 1h，并按保留内容占用后的剩余预算裁剪。Rust kernel 不增删 marker、不重打 last、不自动降级 TTL。Node native envelope 不用菜单 TTL 重分类上游 usage，日志/计费保留真实 5m/1h 分桶。Node 对象不等于最终 wire；HTTP hop 原有独立缓存整流不变。
